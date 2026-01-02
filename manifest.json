@@ -2,20 +2,21 @@
   "name": "مساعد تحويل العملة",
   "short_name": "تحويل العملة",
   "description": "مساعد بسيط لفهم وتحويل العملة خلال فترة التغيير",
-  "start_url": "/",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#F5F7FA",
+  "background_color": "#081920",
   "theme_color": "#56BACF",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "./icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "icon-512.png",
+      "src": "./icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

@@ -3,16 +3,28 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="description" content="مساعد بسيط لفهم وتحويل العملة خلال فترة التغيير">
     <meta name="theme-color" content="#56BACF">
+
+    <!-- iOS PWA Support -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="تحويل العملة">
+    <link rel="apple-touch-icon" href="./icon-192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="./icon-192.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="./icon-512.png">
+
     <title>مساعد تحويل العملة</title>
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="./manifest.json">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="icon" type="image/png" href="icon-192.png" onerror="this.style.display='none'">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="./styles.css">
+    <link rel="icon" type="image/png" href="./icon-192.png" onerror="this.style.display='none'">
 </head>
 
 <body>
@@ -62,9 +74,29 @@
                     <p class="settings-description"
                         style="margin-top: 1.5em; padding-top: 1em; border-top: 2px solid var(--border-color);">
                         <strong>عن المطور:</strong><br>
-                        تم تطوير هذا التطبيق بهدف مساعدة الناس على فهم التغيير النقدي بطريقة بسيطة وآمنة. أنا مطوّر ويب
-                        أعمل على بناء حلول تقنية عملية تركز على تجربة المستخدم وتبسيط المفاهيم المعقدة.
+                        تم تصميم وتطوير هذا التطبيق بهدف مساعدة الناس على فهم التغيير النقدي بطريقة بسيطة وآمنة.<br>
+                        أنا محمد عروق مطوّر
+                        Full-stack JavaScript متخصص في MERN stack، أعمل على بناء تطبيقات ويب و Windows تركز على تجربة
+                        المستخدم وتبسيط المفاهيم المعقدة. شغوف ببناء حلول تقنية عملية تساعد الناس في حياتهم اليومية.
                     </p>
+                    <div class="social-links"
+                        style="margin-top: 1em; padding-top: 1em; border-top: 1px solid var(--border-color);">
+                        <p style="margin-bottom: 0.8em; font-weight: 600;">تابعني على:</p>
+                        <div class="social-links-container">
+                            <a href="https://www.instagram.com/mohammad.arrok/" target="_blank"
+                                rel="noopener noreferrer" class="social-link">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="https://www.facebook.com/profile.php?id=100011450744873" target="_blank"
+                                rel="noopener noreferrer" class="social-link">
+                                <i class="fab fa-facebook"></i>
+                            </a>
+                            <a href="https://www.linkedin.com/in/mohammad-arok-0275832a5/" target="_blank"
+                                rel="noopener noreferrer" class="social-link">
+                                <i class="fab fa-linkedin"></i>
+                            </a>
+                        </div>
+                    </div>
                     <p class="settings-description"
                         style="margin-top: 1em; padding-top: 1em; border-top: 1px solid var(--border-color);">
                         <strong>تنبيه:</strong> هذا التطبيق إرشادي فقط، والغرض منه تسهيل الفهم والحساب.

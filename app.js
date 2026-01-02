@@ -24,18 +24,18 @@ document.addEventListener('DOMContentLoaded', () => {
 function initializeTheme() {
     const saved = localStorage.getItem('currencyAppData');
     let themeMode = null;
-    
+
     if (saved) {
         const data = JSON.parse(saved);
         themeMode = data.themeMode;
     }
-    
+
     // If no saved preference, detect system preference
     if (themeMode === null) {
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         themeMode = prefersDark ? 'dark' : 'light';
     }
-    
+
     applyTheme(themeMode, false); // false = don't save yet (initial load)
     appState.themeMode = themeMode;
 }
@@ -64,7 +64,7 @@ function loadSavedData() {
         const data = JSON.parse(saved);
         appState.savedCalculations = data.savedCalculations || [];
         appState.largeTextMode = data.largeTextMode || false;
-        
+
         if (appState.largeTextMode) {
             document.body.classList.add('large-text');
             const largeTextToggle = document.getElementById('largeTextMode');
@@ -152,7 +152,7 @@ function initializeEventListeners() {
 // Screen navigation
 function switchScreen(screenName) {
     appState.currentScreen = screenName;
-    
+
     // Update buttons
     document.querySelectorAll('.screen-btn').forEach(btn => {
         btn.classList.remove('active');
@@ -194,13 +194,13 @@ function performConversion() {
     }
 
     showLoading();
-    
+
     setTimeout(() => {
         const result = convertCurrency(amount, fromCurrency, toCurrency);
         document.getElementById('convertedAmount').textContent = formatNumber(result);
         document.getElementById('converterResult').style.display = 'block';
         hideLoading();
-        
+
         // Save calculation
         saveCalculation({
             type: 'conversion',
@@ -215,7 +215,7 @@ function performConversion() {
 
 function convertCurrency(amount, from, to) {
     const rate = appState.conversionRate; // Fixed: 100
-    
+
     // Simplified conversion: 1 new = 100 old (remove two zeros)
     if (from === 'old' && to === 'new') {
         // Old to New: divide by 100 (remove two zeros)
@@ -237,7 +237,7 @@ function convertCurrency(amount, from, to) {
             return amount; // USD to/from new is 1:1
         }
     }
-    
+
     return 0;
 }
 
@@ -268,7 +268,7 @@ function addBanknoteDenomination() {
 function updateBanknotesDisplay() {
     const container = document.getElementById('banknotesContainer');
     container.innerHTML = '';
-    
+
     banknoteDenominations.forEach((denom, index) => {
         const item = document.createElement('div');
         item.className = 'banknote-item';
@@ -286,7 +286,7 @@ function updateBanknotesDisplay() {
         `;
         container.appendChild(item);
     });
-    
+
     // Add event listeners
     document.querySelectorAll('.banknote-count-input').forEach(input => {
         input.addEventListener('input', (e) => {
@@ -295,7 +295,7 @@ function updateBanknotesDisplay() {
             calculateBreakdown();
         });
     });
-    
+
     document.querySelectorAll('.remove-banknote-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const index = parseInt(e.target.dataset.index);
@@ -315,9 +315,9 @@ function calculateBreakdown() {
     banknoteDenominations.forEach(denom => {
         total += denom.value * denom.count;
     });
-    
+
     document.getElementById('breakdownTotal').textContent = formatNumber(total);
-    
+
     // Convert to new currency (assuming total is in old currency)
     const converted = convertCurrency(total, 'old', 'new');
     document.getElementById('breakdownConverted').textContent = formatNumber(converted);
@@ -333,27 +333,27 @@ function updateExchangeRatesDisplay() {
 function performComparison() {
     const before = parseFloat(document.getElementById('beforeAmount').value);
     const after = parseFloat(document.getElementById('afterAmount').value);
-    
+
     if (!before || before < 0 || !after || after < 0) {
         showError('comparisonResult', 'يرجى إدخال مبالغ صحيحة');
         return;
     }
-    
+
     const difference = after - before;
     const percentageValue = (difference / before) * 100;
     // Format percentage to remove trailing zeros
     let percentage = percentageValue.toFixed(2);
     percentage = percentage.replace(/\.0+$/, ''); // Remove .00
     percentage = percentage.replace(/(\.\d*?)0+$/, '$1'); // Remove trailing zeros (e.g., 15.50 → 15.5)
-    
+
     document.getElementById('differenceAmount').textContent = formatNumber(difference);
     document.getElementById('percentageChange').textContent = `${percentage}%`;
     document.getElementById('comparisonResult').style.display = 'block';
-    
+
     // Color code the result
     const diffElement = document.getElementById('differenceAmount');
     const percentElement = document.getElementById('percentageChange');
-    
+
     if (difference > 0) {
         diffElement.style.color = 'var(--success-color)';
         percentElement.style.color = 'var(--success-color)';
@@ -364,7 +364,7 @@ function performComparison() {
         diffElement.style.color = 'var(--text-primary)';
         percentElement.style.color = 'var(--text-primary)';
     }
-    
+
     // Save calculation
     saveCalculation({
         type: 'comparison',
@@ -379,7 +379,7 @@ function performComparison() {
 // Preset Scenarios
 function showScenario(scenario) {
     const content = document.getElementById('scenarioContent');
-    
+
     const scenarios = {
         salary: {
             title: 'حساب الراتب',
@@ -442,16 +442,16 @@ function showScenario(scenario) {
             }
         }
     };
-    
+
     const scenarioData = scenarios[scenario];
     if (!scenarioData) return;
-    
+
     let html = `
         <h3 style="margin-bottom: 12px;">${scenarioData.title}</h3>
         <p style="color: var(--text-secondary); margin-bottom: 20px;">${scenarioData.description}</p>
         <div class="scenario-form">
     `;
-    
+
     scenarioData.fields.forEach(field => {
         html += `
             <div class="input-group">
@@ -460,7 +460,7 @@ function showScenario(scenario) {
             </div>
         `;
     });
-    
+
     html += `
             <button class="calculate-btn" id="scenario-calculate-btn">احسب</button>
             <div class="scenario-result" id="scenario-result" style="display: none;">
@@ -470,9 +470,9 @@ function showScenario(scenario) {
             </div>
         </div>
     `;
-    
+
     content.innerHTML = html;
-    
+
     // Add calculate button listener
     document.getElementById('scenario-calculate-btn').addEventListener('click', () => {
         const amount = parseFloat(document.getElementById('scenario-amount').value);
@@ -480,7 +480,7 @@ function showScenario(scenario) {
             alert('يرجى إدخال مبلغ صحيح');
             return;
         }
-        
+
         const result = scenarioData.calculate(amount);
         document.getElementById('scenario-result-label').textContent = result.label;
         document.getElementById('scenario-result-value').textContent = formatNumber(result.value);
@@ -489,7 +489,7 @@ function showScenario(scenario) {
             document.getElementById('scenario-result-note').style.display = 'block';
         }
         document.getElementById('scenario-result').style.display = 'block';
-        
+
         // Save calculation
         saveCalculation({
             type: 'scenario',
@@ -499,7 +499,7 @@ function showScenario(scenario) {
             timestamp: new Date().toISOString()
         });
     });
-    
+
     // Allow Enter key
     document.getElementById('scenario-amount').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
@@ -511,22 +511,22 @@ function showScenario(scenario) {
 // Utility Functions
 function formatNumber(num, includeCurrency = true) {
     if (isNaN(num)) return includeCurrency ? '- ليرة سورية' : '-';
-    
+
     // Format number with Arabic locale
     let formatted = new Intl.NumberFormat('ar-SY', {
         minimumFractionDigits: 0,
         maximumFractionDigits: 2
     }).format(num);
-    
+
     // Remove trailing zeros after decimal point
     formatted = formatted.replace(/\.0+$/, ''); // Remove .00, .0, etc.
     formatted = formatted.replace(/(\.\d*?)0+$/, '$1'); // Remove trailing zeros in decimals (e.g., 15.50 → 15.5)
-    
+
     // Add currency label if requested
     if (includeCurrency) {
         formatted += ' ليرة سورية';
     }
-    
+
     return formatted;
 }
 
@@ -557,43 +557,69 @@ function saveCalculation(calculation) {
 let deferredPrompt;
 
 function initializePWA() {
+    const installBtn = document.getElementById('installBtn');
+    const installStatus = document.getElementById('installStatus');
+
     // Check if already installed
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-        document.getElementById('installStatus').textContent = 'التطبيق مثبت بالفعل';
+    if (window.matchMedia('(display-mode: standalone)').matches ||
+        window.navigator.standalone === true) {
+        installStatus.textContent = 'التطبيق مثبت بالفعل';
+        installBtn.style.display = 'none';
         return;
     }
-    
-    // Listen for beforeinstallprompt event
+
+    // Detect iOS
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+    if (isIOS) {
+        // iOS doesn't support beforeinstallprompt, show manual instructions
+        installStatus.innerHTML = `
+            <strong>لتثبيت التطبيق على iOS:</strong><br>
+            1. اضغط على زر المشاركة (Share) في Safari<br>
+            2. اختر "إضافة إلى الشاشة الرئيسية" (Add to Home Screen)<br>
+            3. اضغط "إضافة" (Add)
+        `;
+        installBtn.style.display = 'none';
+        return;
+    }
+
+    // Listen for beforeinstallprompt event (Android/Chrome)
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
-        document.getElementById('installBtn').style.display = 'block';
+        installBtn.style.display = 'block';
+        installStatus.textContent = 'جاهز للتثبيت';
     });
-    
+
     // Install button click
-    document.getElementById('installBtn').addEventListener('click', async () => {
+    installBtn.addEventListener('click', async () => {
         if (!deferredPrompt) {
-            document.getElementById('installStatus').textContent = 'التثبيت غير متاح';
+            installStatus.textContent = 'التثبيت غير متاح حالياً';
             return;
         }
-        
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        
-        if (outcome === 'accepted') {
-            document.getElementById('installStatus').textContent = 'تم التثبيت بنجاح!';
-            document.getElementById('installBtn').style.display = 'none';
-        } else {
-            document.getElementById('installStatus').textContent = 'تم إلغاء التثبيت';
+
+        try {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+
+            if (outcome === 'accepted') {
+                installStatus.textContent = 'جاري التثبيت...';
+                installBtn.style.display = 'none';
+            } else {
+                installStatus.textContent = 'تم إلغاء التثبيت';
+            }
+        } catch (error) {
+            console.error('Installation error:', error);
+            installStatus.textContent = 'حدث خطأ أثناء التثبيت';
         }
-        
+
         deferredPrompt = null;
     });
-    
+
     // Check if already installed
     window.addEventListener('appinstalled', () => {
-        document.getElementById('installStatus').textContent = 'تم تثبيت التطبيق بنجاح!';
-        document.getElementById('installBtn').style.display = 'none';
+        installStatus.textContent = 'تم تثبيت التطبيق بنجاح!';
+        installBtn.style.display = 'none';
         deferredPrompt = null;
     });
 }
@@ -601,9 +627,20 @@ function initializePWA() {
 // Service Worker Registration
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
+        navigator.serviceWorker.register('./sw.js', { scope: './' })
             .then(registration => {
                 console.log('Service Worker registered:', registration);
+
+                // Check for updates
+                registration.addEventListener('updatefound', () => {
+                    const newWorker = registration.installing;
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            // New service worker available, user can refresh
+                            console.log('New service worker available');
+                        }
+                    });
+                });
             })
             .catch(error => {
                 console.log('Service Worker registration failed:', error);

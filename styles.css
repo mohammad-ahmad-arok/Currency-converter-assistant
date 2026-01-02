@@ -140,6 +140,19 @@ body.large-text .screen-btn {
     align-items: center;
 }
 
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo img {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    object-fit: contain;
+}
+
 .app-title {
     font-size: 1.3em;
     color: var(--primary-color);
@@ -292,6 +305,45 @@ body.large-text .screen-btn {
 .toggle-text {
     font-size: 1em;
     color: var(--text-primary);
+}
+
+/* Social Links */
+.social-links-container {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: var(--primary-color);
+    padding: 12px;
+    border-radius: var(--border-radius);
+    transition: all 0.2s;
+    font-size: 1.5em;
+    width: 48px;
+    height: 48px;
+    background: var(--background);
+    border: 2px solid var(--border-color);
+}
+
+.social-link:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+}
+
+.social-link:active {
+    transform: translateY(0);
+}
+
+.social-link i {
+    font-size: 1.2em;
 }
 
 /* Main Content */
