@@ -598,12 +598,79 @@ body.large-text .screen-btn {
 .rate-item {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     padding: 16px;
     border-bottom: 1px solid var(--border-color);
 }
 
 .rate-item:last-child {
     border-bottom: none;
+}
+
+/* USD Rate Display in Converter */
+.usd-rate-display {
+    margin-bottom: var(--spacing-unit);
+    padding: 12px;
+    background: var(--background);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+}
+
+.usd-rate-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.usd-rate-label {
+    font-weight: 500;
+    color: var(--text-primary);
+    font-size: 0.95em;
+}
+
+.usd-rate-value {
+    font-weight: 600;
+    color: var(--primary-color);
+    font-size: 1.1em;
+    flex: 1;
+}
+
+.refresh-usd-btn {
+    padding: 8px 12px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+}
+
+.refresh-usd-btn:hover {
+    background: var(--color-secondary);
+    transform: scale(1.05);
+}
+
+.refresh-usd-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.usd-rate-error {
+    margin-top: 8px;
+    padding: 8px;
+    background: rgba(231, 76, 60, 0.1);
+    border: 1px solid var(--error-color);
+    border-radius: 6px;
+    color: var(--error-color);
+    font-size: 0.9em;
+    text-align: center;
 }
 
 .rate-label {

@@ -5,6 +5,12 @@
 const appState = {
     currentScreen: 'converter',
     conversionRate: 100, // Fixed rate: 1 new = 100 old (remove two zeros)
+    exchangeRates: {
+        USD: { toOld: null, toNew: null, ask: null, bid: null, lastUpdate: null },
+        EUR: { toOld: null, toNew: null, ask: null, bid: null, lastUpdate: null },
+        SAR: { toOld: null, toNew: null, ask: null, bid: null, lastUpdate: null },
+        TRY: { toOld: null, toNew: null, ask: null, bid: null, lastUpdate: null }
+    },
     savedCalculations: [],
     largeTextMode: false,
     themeMode: null // null = auto, 'dark' or 'light'
@@ -18,6 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initializePWA();
     updateExchangeRatesDisplay();
     initializeCashBreakdown();
+    fetchExchangeRates(); // Fetch exchange rates on app load
+    updateExchangeRateDisplay(); // Update exchange rate display
 });
 
 // Initialize theme based on system preference or saved preference
@@ -64,6 +72,18 @@ function loadSavedData() {
         const data = JSON.parse(saved);
         appState.savedCalculations = data.savedCalculations || [];
         appState.largeTextMode = data.largeTextMode || false;
+        if (data.exchangeRates) {
+            appState.exchangeRates = { ...appState.exchangeRates, ...data.exchangeRates };
+        } else if (data.usdRates) {
+            // Migrate old usdRates format to new exchangeRates format
+            appState.exchangeRates.USD = {
+                toOld: data.usdRates.toOld,
+                toNew: data.usdRates.toNew,
+                ask: data.usdRates.toNew,
+                bid: null,
+                lastUpdate: data.usdRates.lastUpdate
+            };
+        }
 
         if (appState.largeTextMode) {
             document.body.classList.add('large-text');
@@ -78,7 +98,8 @@ function saveData() {
     const data = {
         savedCalculations: appState.savedCalculations,
         largeTextMode: appState.largeTextMode,
-        themeMode: appState.themeMode
+        themeMode: appState.themeMode,
+        exchangeRates: appState.exchangeRates
     };
     localStorage.setItem('currencyAppData', JSON.stringify(data));
 }
@@ -107,6 +128,23 @@ function initializeEventListeners() {
     document.getElementById('amountInput').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') performConversion();
     });
+
+    // Currency selector change - show/hide exchange rate
+    document.getElementById('fromCurrency').addEventListener('change', updateExchangeRateDisplay);
+    document.getElementById('toCurrency').addEventListener('change', updateExchangeRateDisplay);
+
+    // Exchange Rate refresh button
+    const refreshExchangeRateBtn = document.getElementById('refreshExchangeRateBtn');
+    if (refreshExchangeRateBtn) {
+        refreshExchangeRateBtn.addEventListener('click', async () => {
+            refreshExchangeRateBtn.disabled = true;
+            refreshExchangeRateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            await fetchExchangeRates();
+            updateExchangeRateDisplay();
+            refreshExchangeRateBtn.disabled = false;
+            refreshExchangeRateBtn.innerHTML = '<i class="fas fa-sync-alt"></i>';
+        });
+    }
 
     // Cash breakdown
     document.getElementById('addDenominationBtn').addEventListener('click', addBanknoteDenomination);
@@ -196,22 +234,39 @@ function performConversion() {
     showLoading();
 
     setTimeout(() => {
-        const result = convertCurrency(amount, fromCurrency, toCurrency);
-        document.getElementById('convertedAmount').textContent = formatNumber(result);
-        document.getElementById('converterResult').style.display = 'block';
-        hideLoading();
+        try {
+            const result = convertCurrency(amount, fromCurrency, toCurrency);
+            document.getElementById('convertedAmount').textContent = formatNumber(result);
+            document.getElementById('converterResult').style.display = 'block';
+            hideLoading();
 
-        // Save calculation
-        saveCalculation({
-            type: 'conversion',
-            amount,
-            from: fromCurrency,
-            to: toCurrency,
-            result,
-            timestamp: new Date().toISOString()
-        });
+            // Save calculation
+            saveCalculation({
+                type: 'conversion',
+                amount,
+                from: fromCurrency,
+                to: toCurrency,
+                result,
+                timestamp: new Date().toISOString()
+            });
+        } catch (error) {
+            hideLoading();
+            if (error.message === 'EXCHANGE_RATE_UNAVAILABLE') {
+                showError('converterResult', 'غير قادر على جلب معلومات الصرف. يرجى تحديث سعر الصرف أولاً.');
+            } else {
+                showError('converterResult', 'حدث خطأ أثناء الحساب. يرجى المحاولة مرة أخرى.');
+            }
+        }
     }, 300);
 }
+
+// Currency code mapping
+const currencyMap = {
+    'usd': 'USD',
+    'eur': 'EUR',
+    'sar': 'SAR',
+    'try': 'TRY'
+};
 
 function convertCurrency(amount, from, to) {
     const rate = appState.conversionRate; // Fixed: 100
@@ -226,15 +281,60 @@ function convertCurrency(amount, from, to) {
     } else if (from === to) {
         // Same currency
         return amount;
-    } else if (from === 'usd' || to === 'usd') {
-        // USD conversions - for now, treat USD same as new currency
-        // This can be adjusted if USD rate is needed
-        if (from === 'usd' && to === 'old') {
-            return amount * rate;
-        } else if (from === 'old' && to === 'usd') {
-            return amount / rate;
-        } else {
-            return amount; // USD to/from new is 1:1
+    }
+
+    // Foreign currency conversions
+    const foreignCurrencies = ['usd', 'eur', 'sar', 'try'];
+    const fromIsForeign = foreignCurrencies.includes(from);
+    const toIsForeign = foreignCurrencies.includes(to);
+
+    if (fromIsForeign || toIsForeign) {
+        const currencyCode = currencyMap[from] || currencyMap[to];
+        const exchangeRate = appState.exchangeRates[currencyCode];
+
+        // Check if rates are available
+        if (!exchangeRate || (!exchangeRate.toNew && !exchangeRate.toOld)) {
+            throw new Error('EXCHANGE_RATE_UNAVAILABLE');
+        }
+
+        // Use ask price (سعر الشراء) - the price at which you buy from the bank
+        const rateValue = parseFloat(exchangeRate.ask || exchangeRate.toNew);
+        if (!rateValue || rateValue <= 0) {
+            throw new Error('EXCHANGE_RATE_UNAVAILABLE');
+        }
+
+        // Determine if rate is for old or new currency
+        // If rate > 1000, it's likely for old currency; otherwise for new
+        const isOldCurrencyRate = rateValue > 1000;
+        const rateForOld = isOldCurrencyRate ? rateValue : rateValue * 100;
+        const rateForNew = isOldCurrencyRate ? rateValue / 100 : rateValue;
+
+        if (fromIsForeign && to === 'old') {
+            // Foreign currency to Old Syrian Pound
+            return amount * rateForOld;
+        } else if (fromIsForeign && to === 'new') {
+            // Foreign currency to New Syrian Pound
+            return amount * rateForNew;
+        } else if (from === 'old' && toIsForeign) {
+            // Old Syrian Pound to Foreign currency
+            return amount / rateForOld;
+        } else if (from === 'new' && toIsForeign) {
+            // New Syrian Pound to Foreign currency
+            return amount / rateForNew;
+        } else if (fromIsForeign && toIsForeign) {
+            // Convert between two foreign currencies via SYP
+            // First convert from currency to new SYP, then to target currency
+            const fromRate = parseFloat(appState.exchangeRates[currencyMap[from]].ask || appState.exchangeRates[currencyMap[from]].toNew);
+            const toRate = parseFloat(appState.exchangeRates[currencyMap[to]].ask || appState.exchangeRates[currencyMap[to]].toNew);
+
+            if (!fromRate || !toRate || fromRate <= 0 || toRate <= 0) {
+                throw new Error('EXCHANGE_RATE_UNAVAILABLE');
+            }
+
+            const fromRateNew = fromRate > 1000 ? fromRate / 100 : fromRate;
+            const toRateNew = toRate > 1000 ? toRate / 100 : toRate;
+
+            return (amount * fromRateNew) / toRateNew;
         }
     }
 
@@ -327,6 +427,133 @@ function calculateBreakdown() {
 function updateExchangeRatesDisplay() {
     const rate = appState.conversionRate;
     document.getElementById('conversionRate').textContent = `1 : ${rate}`;
+}
+
+// Update Exchange Rate Display in Converter Screen
+function updateExchangeRateDisplay() {
+    const fromCurrency = document.getElementById('fromCurrency').value;
+    const toCurrency = document.getElementById('toCurrency').value;
+    const exchangeRateDisplay = document.getElementById('exchangeRateDisplay');
+    const exchangeRateValue = document.getElementById('exchangeRateValue');
+    const exchangeRateLabel = document.getElementById('exchangeRateLabel');
+    const exchangeRateError = document.getElementById('exchangeRateError');
+
+    const foreignCurrencies = ['usd', 'eur', 'sar', 'try'];
+    const currencyNames = {
+        'usd': 'الدولار',
+        'eur': 'اليورو',
+        'sar': 'الريال السعودي',
+        'try': 'الليرة التركية'
+    };
+
+    const selectedForeign = fromCurrency in currencyNames ? fromCurrency : (toCurrency in currencyNames ? toCurrency : null);
+
+    // Show exchange rate display only if foreign currency is selected
+    if (selectedForeign) {
+        exchangeRateDisplay.style.display = 'block';
+        exchangeRateError.style.display = 'none';
+
+        const currencyCode = currencyMap[selectedForeign];
+        const exchangeRate = appState.exchangeRates[currencyCode];
+        const currencyName = currencyNames[selectedForeign];
+
+        exchangeRateLabel.textContent = `سعر ${currencyName} اليوم:`;
+
+        if (exchangeRate && exchangeRate.ask) {
+            // Show the rate
+            const rateValue = parseFloat(exchangeRate.ask);
+            const isOldCurrencyRate = rateValue > 1000;
+            const rateForNew = isOldCurrencyRate ? rateValue / 100 : rateValue;
+
+            exchangeRateValue.textContent = `${formatNumber(rateForNew, false)} ليرة جديدة`;
+            exchangeRateValue.style.color = 'var(--text-primary)';
+        } else {
+            // Show error
+            exchangeRateValue.textContent = 'غير متوفر';
+            exchangeRateValue.style.color = 'var(--error-color)';
+            exchangeRateError.textContent = 'غير قادر على جلب معلومات الصرف من الموقع. يرجى المحاولة مرة أخرى.';
+            exchangeRateError.style.display = 'block';
+        }
+    } else {
+        exchangeRateDisplay.style.display = 'none';
+    }
+}
+
+// Fetch exchange rates from sp-today.com API
+async function fetchExchangeRates() {
+    try {
+        // Check if we have recent rates (less than 1 hour old)
+        const currencies = ['USD', 'EUR', 'SAR', 'TRY'];
+        let hasRecentRates = true;
+
+        for (const currency of currencies) {
+            const rate = appState.exchangeRates[currency];
+            if (!rate || !rate.lastUpdate) {
+                hasRecentRates = false;
+                break;
+            }
+            const lastUpdate = new Date(rate.lastUpdate);
+            const now = new Date();
+            const hoursDiff = (now - lastUpdate) / (1000 * 60 * 60);
+            if (hoursDiff >= 1 || !rate.ask) {
+                hasRecentRates = false;
+                break;
+            }
+        }
+
+        if (hasRecentRates) {
+            console.log('Using cached exchange rates');
+            return; // Use cached rates if less than 1 hour old
+        }
+
+        // Fetch from API
+        const timestamp = Date.now();
+        const apiUrl = `https://sp-today.com/app_api/cur_damascus.json?${timestamp}`;
+
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+            throw new Error('Failed to fetch exchange rates');
+        }
+
+        const data = await response.json();
+
+        // Process each currency
+        for (const currency of data) {
+            const currencyCode = currency.name;
+            if (currencyCode in appState.exchangeRates) {
+                const ask = parseFloat(currency.ask);
+                const bid = parseFloat(currency.bid);
+
+                if (ask && ask > 0) {
+                    // Determine if rate is for old or new currency
+                    // If rate > 1000, likely old currency; if < 1000, likely new currency
+                    const isOldCurrencyRate = ask > 1000;
+
+                    appState.exchangeRates[currencyCode].ask = ask;
+                    appState.exchangeRates[currencyCode].bid = bid;
+                    appState.exchangeRates[currencyCode].toOld = isOldCurrencyRate ? ask : ask * 100;
+                    appState.exchangeRates[currencyCode].toNew = isOldCurrencyRate ? ask / 100 : ask;
+                    appState.exchangeRates[currencyCode].lastUpdate = new Date().toISOString();
+                }
+            }
+        }
+
+        saveData();
+        updateExchangeRateDisplay(); // Update display after fetching
+        console.log('Exchange rates updated:', appState.exchangeRates);
+    } catch (error) {
+        console.error('Error fetching exchange rates from sp-today.com:', error);
+        // Clear rates on error
+        const currencies = ['USD', 'EUR', 'SAR', 'TRY'];
+        for (const currency of currencies) {
+            appState.exchangeRates[currency].ask = null;
+            appState.exchangeRates[currency].bid = null;
+            appState.exchangeRates[currency].toOld = null;
+            appState.exchangeRates[currency].toNew = null;
+        }
+        saveData();
+        updateExchangeRateDisplay();
+    }
 }
 
 // Before/After Comparison

@@ -151,6 +151,9 @@
                             <option value="old">العملة القديمة</option>
                             <option value="new">العملة الجديدة</option>
                             <option value="usd">دولار أمريكي (USD)</option>
+                            <option value="eur">يورو (EUR)</option>
+                            <option value="sar">ريال سعودي (SAR)</option>
+                            <option value="try">ليرة تركية (TRY)</option>
                         </select>
                     </div>
                     <div class="input-group">
@@ -159,7 +162,21 @@
                             <option value="old">العملة القديمة</option>
                             <option value="new" selected>العملة الجديدة</option>
                             <option value="usd">دولار أمريكي (USD)</option>
+                            <option value="eur">يورو (EUR)</option>
+                            <option value="sar">ريال سعودي (SAR)</option>
+                            <option value="try">ليرة تركية (TRY)</option>
                         </select>
+                    </div>
+                    <!-- Exchange Rate Display (shown only when foreign currency is selected) -->
+                    <div id="exchangeRateDisplay" class="usd-rate-display" style="display: none;">
+                        <div class="usd-rate-info">
+                            <span class="usd-rate-label" id="exchangeRateLabel">سعر الصرف اليوم:</span>
+                            <span class="usd-rate-value" id="exchangeRateValue">-</span>
+                            <button class="refresh-usd-btn" id="refreshExchangeRateBtn" title="تحديث سعر الصرف">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                        <div id="exchangeRateError" class="usd-rate-error" style="display: none;"></div>
                     </div>
                     <button class="calculate-btn" id="convertBtn">احسب</button>
                     <div class="result-box" id="converterResult">
