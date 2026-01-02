@@ -1,0 +1,771 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Tajawal', sans-serif;
+}
+
+:root {
+    /* Color System - Dark Mode (Default) */
+    --color-primary: #56BACF;
+    --color-secondary: #2880BC;
+    --color-bg: #081920;
+    --color-text: #F3FDFF;
+    --color-card-bg: #0F2835;
+    --color-border: #1A3A4A;
+    --color-text-secondary: #A8C5D1;
+    --color-error: #E74C3C;
+    --color-success: #27AE60;
+
+    /* Legacy variable names for compatibility */
+    --primary-color: var(--color-primary);
+    --primary-dark: var(--color-secondary);
+    --secondary-color: #50C878;
+    --background: var(--color-bg);
+    --card-background: var(--color-card-bg);
+    --text-primary: var(--color-text);
+    --text-secondary: var(--color-text-secondary);
+    --border-color: var(--color-border);
+    --error-color: var(--color-error);
+    --success-color: var(--color-success);
+
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.4);
+    --border-radius: 12px;
+    --spacing-unit: 16px;
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #56BACF;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #2880BC;
+}
+
+.logo {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.logo img {
+    max-width: 40px;
+}
+
+/* Light Mode */
+body.light-mode {
+    --color-bg: #F5F7FA;
+    --color-text: #2C3E50;
+    --color-card-bg: #FFFFFF;
+    --color-border: #E1E8ED;
+    --color-text-secondary: #7F8C8D;
+
+    /* Update legacy variables */
+    --background: var(--color-bg);
+    --card-background: var(--color-card-bg);
+    --text-primary: var(--color-text);
+    --text-secondary: var(--color-text-secondary);
+    --border-color: var(--color-border);
+
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+body {
+
+    background: var(--color-bg);
+    color: var(--color-text);
+    line-height: 1.8;
+    min-height: 100vh;
+    padding-bottom: 20px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.large-text {
+    font-size: 1.2em;
+}
+
+body.large-text .app-title {
+    font-size: 1.5em;
+}
+
+body.large-text .screen-title {
+    font-size: 2em;
+}
+
+body.large-text .amount-input,
+body.large-text .currency-select {
+    font-size: 1.3em;
+    padding: 18px;
+}
+
+body.large-text .calculate-btn,
+body.large-text .screen-btn {
+    font-size: 1.2em;
+    padding: 18px;
+}
+
+/* Navigation Bar */
+.navbar {
+    background: var(--card-background);
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: var(--spacing-unit);
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.app-title {
+    font-size: 1.3em;
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.settings-btn {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.settings-btn:hover {
+    background: var(--background);
+}
+
+.settings-btn:active {
+    transform: scale(0.95);
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-unit);
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--card-background);
+    border-radius: var(--border-radius);
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-unit);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h2 {
+    font-size: 1.5em;
+    color: var(--text-primary);
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 2em;
+    cursor: pointer;
+    color: var(--text-secondary);
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.close-btn:hover {
+    background: var(--background);
+}
+
+.modal-body {
+    padding: var(--spacing-unit);
+}
+
+.settings-section {
+    margin-bottom: 2em;
+}
+
+.settings-section h3 {
+    font-size: 1.2em;
+    margin-bottom: 0.5em;
+    color: var(--text-primary);
+}
+
+.settings-description {
+    color: var(--text-secondary);
+    margin-bottom: 0.5em;
+    line-height: 1.8;
+}
+
+.install-btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: var(--border-radius);
+    font-size: 1em;
+    cursor: pointer;
+    margin-top: 0.5em;
+    transition: background 0.2s;
+    width: 100%;
+}
+
+.install-btn:hover {
+    background: var(--primary-dark);
+}
+
+.install-status {
+    margin-top: 0.5em;
+    color: var(--text-secondary);
+    font-size: 0.9em;
+}
+
+.toggle-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 12px;
+    border-radius: var(--border-radius);
+    transition: background 0.2s;
+}
+
+.toggle-label:hover {
+    background: var(--background);
+}
+
+.toggle-input {
+    width: 24px;
+    height: 24px;
+    margin-left: 12px;
+    cursor: pointer;
+}
+
+.toggle-text {
+    font-size: 1em;
+    color: var(--text-primary);
+}
+
+/* Main Content */
+.main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-unit);
+}
+
+/* Screen Selector */
+.screen-selector {
+    display: flex;
+    gap: 8px;
+    margin-bottom: var(--spacing-unit);
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scrollbar-width: thin;
+}
+
+.screen-selector::-webkit-scrollbar {
+    height: 6px;
+}
+
+.screen-selector::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 3px;
+}
+
+.screen-btn {
+    background: var(--card-background);
+    border: 2px solid var(--border-color);
+    padding: 12px 20px;
+    border-radius: var(--border-radius);
+    font-size: 0.95em;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.screen-btn:hover {
+    border-color: var(--primary-color);
+    background: var(--background);
+}
+
+.screen-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* Screens */
+.screen {
+    display: none;
+}
+
+.screen.active {
+    display: block;
+}
+
+.screen-content {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.screen-title {
+    font-size: 1.8em;
+    margin-bottom: var(--spacing-unit);
+    color: var(--text-primary);
+    text-align: center;
+}
+
+.screen-description {
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-unit);
+    text-align: center;
+}
+
+/* Calculator Card */
+.calculator-card,
+.rates-card {
+    background: var(--card-background);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-unit);
+    box-shadow: var(--shadow);
+    margin-bottom: var(--spacing-unit);
+}
+
+.input-group {
+    margin-bottom: var(--spacing-unit);
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--text-primary);
+    font-size: 1em;
+}
+
+.amount-input,
+.currency-select {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 1.1em;
+    transition: border-color 0.2s, background-color 0.3s, color 0.3s;
+    background: var(--card-background);
+    color: var(--text-primary);
+}
+
+.amount-input:focus,
+.currency-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.amount-input::placeholder {
+    color: var(--text-secondary);
+}
+
+.calculate-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    margin-top: var(--spacing-unit);
+}
+
+.calculate-btn:hover {
+    background: var(--primary-dark);
+}
+
+.calculate-btn:active {
+    transform: scale(0.98);
+}
+
+.result-box {
+    margin-top: var(--spacing-unit);
+    padding: var(--spacing-unit);
+    background: var(--background);
+    border-radius: var(--border-radius);
+    text-align: center;
+}
+
+.result-label {
+    font-size: 0.95em;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.result-amount {
+    font-size: 2em;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 8px;
+    word-break: break-word;
+}
+
+.result-note {
+    font-size: 0.85em;
+    color: var(--text-secondary);
+    margin-top: 8px;
+}
+
+/* Cash Breakdown */
+.banknotes-container {
+    margin-bottom: var(--spacing-unit);
+}
+
+.banknote-item {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    align-items: center;
+    padding: 12px;
+    background: var(--background);
+    border-radius: var(--border-radius);
+}
+
+.banknote-item input {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 1em;
+}
+
+.banknote-item input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.banknote-label {
+    min-width: 80px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.remove-banknote-btn {
+    background: var(--error-color);
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background 0.2s;
+}
+
+.remove-banknote-btn:hover {
+    background: #C0392B;
+}
+
+.add-denomination-btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--secondary-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-bottom: var(--spacing-unit);
+}
+
+.add-denomination-btn:hover {
+    background: #45B869;
+}
+
+/* Exchange Rates */
+.rate-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.rate-item:last-child {
+    border-bottom: none;
+}
+
+.rate-label {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.rate-value {
+    font-size: 1.2em;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.rate-explanation {
+    margin-top: var(--spacing-unit);
+    padding: var(--spacing-unit);
+    background: var(--background);
+    border-radius: var(--border-radius);
+}
+
+.explanation-text,
+.explanation-examples {
+    color: var(--text-primary);
+    font-size: 1em;
+    line-height: 1.8;
+    margin-bottom: 12px;
+}
+
+.explanation-examples {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+}
+
+.rate-note {
+    margin-top: var(--spacing-unit);
+    padding: 12px;
+    background: var(--background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    text-align: center;
+}
+
+.rate-note p {
+    color: var(--text-primary);
+    font-size: 0.9em;
+}
+
+
+/* Scenarios */
+.scenarios-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-unit);
+    margin-bottom: var(--spacing-unit);
+}
+
+.scenario-btn {
+    padding: 20px;
+    background: var(--card-background);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text-primary);
+    box-shadow: var(--shadow);
+}
+
+.scenario-btn:hover {
+    border-color: var(--primary-color);
+    background: var(--background);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+}
+
+.scenario-content {
+    background: var(--card-background);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-unit);
+    box-shadow: var(--shadow);
+    margin-top: var(--spacing-unit);
+}
+
+.scenario-prompt {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 1.1em;
+    padding: 20px;
+}
+
+.scenario-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-unit);
+}
+
+.scenario-result {
+    margin-top: var(--spacing-unit);
+    padding: var(--spacing-unit);
+    background: var(--background);
+    border-radius: var(--border-radius);
+    text-align: center;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(8, 25, 32, 0.95);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    transition: background-color 0.3s ease;
+}
+
+body.light-mode .loading-overlay {
+    background: rgba(245, 247, 250, 0.95);
+}
+
+body.light-mode .loading-overlay p {
+    color: var(--text-primary);
+}
+
+/* Theme transitions - applied to specific elements that need smooth theme changes */
+.navbar, .modal-content, .calculator-card, .rates-card,
+.screen-btn, .result-box, .banknote-item, .scenario-content,
+.rate-item, .rate-note, .rate-explanation {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid var(--border-color);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-overlay p {
+    color: var(--text-primary);
+    font-size: 1.1em;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .screen-selector {
+        gap: 6px;
+    }
+
+    .screen-btn {
+        padding: 10px 16px;
+        font-size: 0.9em;
+    }
+
+    .screen-title {
+        font-size: 1.5em;
+    }
+
+    .scenarios-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .result-amount {
+        font-size: 1.6em;
+    }
+}
+
+@media (max-width: 480px) {
+    .app-title {
+        font-size: 1.1em;
+    }
+
+    .screen-title {
+        font-size: 1.3em;
+    }
+
+    .calculator-card,
+    .rates-card {
+        padding: 12px;
+    }
+
+    .result-amount {
+        font-size: 1.4em;
+    }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Focus styles for keyboard navigation */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+    outline: 3px solid var(--primary-color);
+    outline-offset: 2px;
+}

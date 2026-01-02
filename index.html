@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="مساعد بسيط لفهم وتحويل العملة خلال فترة التغيير">
+    <meta name="theme-color" content="#56BACF">
+    <title>مساعد تحويل العملة</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="icon-192.png" onerror="this.style.display='none'">
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <img src="./icon-192.png" alt="logo">
+                <h1 class="app-title">مساعد تحويل العملة</h1>
+            </div>
+
+            <button class="settings-btn" id="settingsBtn" aria-label="الإعدادات">
+                <span class="settings-icon">⚙️</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>الإعدادات</h2>
+                <button class="close-btn" id="closeSettingsBtn" aria-label="إغلاق">×</button>
+            </div>
+            <div class="modal-body">
+                <!-- PWA Install Section -->
+                <section class="settings-section">
+                    <h3>تثبيت التطبيق</h3>
+                    <p class="settings-description">ثبت التطبيق لاستخدامه بشكل أسرع وبدون إنترنت</p>
+                    <button class="install-btn" id="installBtn" style="display: none;">
+                        تثبيت التطبيق
+                    </button>
+                    <p id="installStatus" class="install-status"></p>
+                </section>
+
+                <!-- About Section -->
+                <section class="settings-section">
+                    <h3>حول التطبيق</h3>
+                    <p class="settings-description">
+                        هذا التطبيق يساعدك على فهم وتحويل العملة بسهولة خلال فترة التغيير. الفكرة بسيطة: العملة الجديدة
+                        تساوي 100 من العملة القديمة (نحذف صفرين).
+                    </p>
+                    <p class="settings-description">
+                        الهدف هو تسهيل المعاملات اليومية وتبسيط الحسابات. لا يوجد خسارة في القيمة بسبب التحويل نفسه -
+                        فقط تغيير في الأرقام.
+                    </p>
+                    <p class="settings-description"
+                        style="margin-top: 1.5em; padding-top: 1em; border-top: 2px solid var(--border-color);">
+                        <strong>عن المطور:</strong><br>
+                        تم تطوير هذا التطبيق بهدف مساعدة الناس على فهم التغيير النقدي بطريقة بسيطة وآمنة. أنا مطوّر ويب
+                        أعمل على بناء حلول تقنية عملية تركز على تجربة المستخدم وتبسيط المفاهيم المعقدة.
+                    </p>
+                    <p class="settings-description"
+                        style="margin-top: 1em; padding-top: 1em; border-top: 1px solid var(--border-color);">
+                        <strong>تنبيه:</strong> هذا التطبيق إرشادي فقط، والغرض منه تسهيل الفهم والحساب.
+                    </p>
+                </section>
+
+                <!-- Theme Toggle -->
+                <section class="settings-section">
+                    <h3>المظهر</h3>
+                    <label class="toggle-label">
+                        <input type="checkbox" id="themeToggle" class="toggle-input">
+                        <span class="toggle-text">الوضع الليلي / النهاري</span>
+                    </label>
+                </section>
+
+                <!-- Large Text Mode -->
+                <section class="settings-section">
+                    <h3>إعدادات العرض</h3>
+                    <label class="toggle-label">
+                        <input type="checkbox" id="largeTextMode" class="toggle-input">
+                        <span class="toggle-text">وضع النص الكبير</span>
+                    </label>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Screen Selector -->
+        <div class="screen-selector">
+            <button class="screen-btn active" data-screen="converter">حاسبة التحويل</button>
+            <button class="screen-btn" data-screen="breakdown">عد النقود</button>
+            <button class="screen-btn" data-screen="rates">أسعار الصرف</button>
+            <button class="screen-btn" data-screen="comparison">قبل وبعد</button>
+            <button class="screen-btn" data-screen="scenarios">سيناريوهات</button>
+        </div>
+
+        <!-- Currency Converter Screen -->
+        <div class="screen active" id="converterScreen">
+            <div class="screen-content">
+                <h2 class="screen-title">حاسبة التحويل</h2>
+                <div class="calculator-card">
+                    <div class="input-group">
+                        <label for="amountInput">المبلغ</label>
+                        <input type="number" id="amountInput" class="amount-input" placeholder="أدخل المبلغ" min="0"
+                            step="0.01">
+                    </div>
+                    <div class="input-group">
+                        <label for="fromCurrency">من</label>
+                        <select id="fromCurrency" class="currency-select">
+                            <option value="old">العملة القديمة</option>
+                            <option value="new">العملة الجديدة</option>
+                            <option value="usd">دولار أمريكي (USD)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="toCurrency">إلى</label>
+                        <select id="toCurrency" class="currency-select">
+                            <option value="old">العملة القديمة</option>
+                            <option value="new" selected>العملة الجديدة</option>
+                            <option value="usd">دولار أمريكي (USD)</option>
+                        </select>
+                    </div>
+                    <button class="calculate-btn" id="convertBtn">احسب</button>
+                    <div class="result-box" id="converterResult">
+                        <p class="result-label">النتيجة:</p>
+                        <p class="result-amount" id="convertedAmount">- ليرة سورية</p>
+                        <p class="result-note">التحويل: 1 عملة جديدة = 100 عملة قديمة (نحذف صفرين)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cash Breakdown Screen -->
+        <div class="screen" id="breakdownScreen">
+            <div class="screen-content">
+                <h2 class="screen-title">عد النقود</h2>
+                <div class="calculator-card">
+                    <p class="screen-description">أدخل عدد الأوراق النقدية لكل فئة (بالعملة القديمة)</p>
+                    <p class="screen-description" style="font-size: 0.9em; margin-top: 8px;">سيتم تحويل المجموع تلقائياً
+                        إلى العملة الجديدة</p>
+                    <div id="banknotesContainer" class="banknotes-container">
+                        <!-- Banknotes will be added dynamically -->
+                    </div>
+                    <button class="add-denomination-btn" id="addDenominationBtn">+ إضافة فئة</button>
+                    <div class="result-box" id="breakdownResult">
+                        <p class="result-label">المجموع:</p>
+                        <p class="result-amount" id="breakdownTotal">0 ليرة سورية</p>
+                        <p class="result-label">القيمة بالعملة الجديدة:</p>
+                        <p class="result-amount" id="breakdownConverted">0 ليرة سورية</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exchange Rates Screen -->
+        <div class="screen" id="ratesScreen">
+            <div class="screen-content">
+                <h2 class="screen-title">أسعار الصرف</h2>
+                <div class="rates-card">
+                    <div class="rate-item">
+                        <span class="rate-label">سعر التحويل:</span>
+                        <span class="rate-value" id="conversionRate">1 : 100</span>
+                    </div>
+                    <div class="rate-explanation">
+                        <p class="explanation-text">
+                            <strong>كيف يعمل التحويل:</strong><br>
+                            العملة الجديدة = العملة القديمة ÷ 100<br>
+                            ببساطة: نحذف صفرين من الرقم
+                        </p>
+                        <p class="explanation-examples">
+                            <strong>أمثلة:</strong><br>
+                            10,000 قديمة → 100 جديدة<br>
+                            1,500 قديمة → 15 جديدة<br>
+                            50,000 قديمة → 500 جديدة
+                        </p>
+                    </div>
+                    <div class="rate-note">
+                        <p>💡 هذا التطبيق إرشادي فقط لتسهيل الفهم والحساب</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Before/After Comparison Screen -->
+        <div class="screen" id="comparisonScreen">
+            <div class="screen-content">
+                <h2 class="screen-title">مقارنة قبل وبعد</h2>
+                <div class="calculator-card">
+                    <p class="screen-description" style="margin-bottom: var(--spacing-unit);">قارن بين مبلغين لمعرفة
+                        الفرق ونسبة التغيير</p>
+                    <div class="input-group">
+                        <label for="beforeAmount">المبلغ قبل التغيير (بالعملة القديمة)</label>
+                        <input type="number" id="beforeAmount" class="amount-input" placeholder="أدخل المبلغ" min="0"
+                            step="0.01">
+                    </div>
+                    <div class="input-group">
+                        <label for="afterAmount">المبلغ بعد التغيير (بالعملة الجديدة)</label>
+                        <input type="number" id="afterAmount" class="amount-input" placeholder="أدخل المبلغ" min="0"
+                            step="0.01">
+                    </div>
+                    <button class="calculate-btn" id="compareBtn">احسب الفرق</button>
+                    <div class="result-box" id="comparisonResult">
+                        <p class="result-label">الفرق:</p>
+                        <p class="result-amount" id="differenceAmount">- ليرة سورية</p>
+                        <p class="result-label">نسبة التغيير:</p>
+                        <p class="result-amount" id="percentageChange">-</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preset Scenarios Screen -->
+        <div class="screen" id="scenariosScreen">
+            <div class="screen-content">
+                <h2 class="screen-title">سيناريوهات</h2>
+                <div class="scenarios-grid">
+                    <button class="scenario-btn" data-scenario="salary">الراتب</button>
+                    <button class="scenario-btn" data-scenario="rent">الإيجار</button>
+                    <button class="scenario-btn" data-scenario="debt">الدين</button>
+                    <button class="scenario-btn" data-scenario="product">سعر المنتج</button>
+                </div>
+                <div id="scenarioContent" class="scenario-content">
+                    <p class="scenario-prompt">اختر سيناريو من الأعلى</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="loading-spinner"></div>
+        <p>جاري الحساب...</p>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
