@@ -214,6 +214,14 @@ function openSettings() {
 function closeSettings() {
     document.getElementById('settingsModal').classList.remove('active');
 }
+const currencyLabels = {
+    'old': 'ليرة سورية قديمة',
+    'new': 'ليرة سورية جديدة',
+    'usd': 'دولار أمريكي',
+    'eur': 'يورو',
+    'sar': 'ريال سعودي',
+    'try': 'ليرة تركية'
+};
 
 // Currency Conversion
 function performConversion() {
@@ -236,7 +244,10 @@ function performConversion() {
     setTimeout(() => {
         try {
             const result = convertCurrency(amount, fromCurrency, toCurrency);
-            document.getElementById('convertedAmount').textContent = formatNumber(result);
+            const targetCurrency = toCurrency;
+            const label = currencyLabels[targetCurrency] || 'ليرة سورية';
+
+            document.getElementById('convertedAmount').textContent = formatNumber(result, label);
             document.getElementById('converterResult').style.display = 'block';
             hideLoading();
 
@@ -507,8 +518,7 @@ async function fetchExchangeRates() {
         }
 
         // Fetch from API
-        const timestamp = Date.now();
-        const apiUrl = `https://sp-today.com/app_api/cur_damascus.json?${timestamp}`;
+        const apiUrl = `https://script.google.com/macros/s/AKfycbza6AAxzPF_BGNP9K4T1saIAfjCGKW1E5rOJEeSDFRDrd549KGVPV42m1TVmnXvI-uhuw/exec`;
 
         const response = await fetch(apiUrl);
         if (!response.ok) {
@@ -736,8 +746,8 @@ function showScenario(scenario) {
 }
 
 // Utility Functions
-function formatNumber(num, includeCurrency = true) {
-    if (isNaN(num)) return includeCurrency ? '- ليرة سورية' : '-';
+function formatNumber(num, currencyLabel = 'ليرة سورية') {
+    if (isNaN(num)) return '-';
 
     // Format number with Arabic locale
     let formatted = new Intl.NumberFormat('ar-SY', {
@@ -746,16 +756,17 @@ function formatNumber(num, includeCurrency = true) {
     }).format(num);
 
     // Remove trailing zeros after decimal point
-    formatted = formatted.replace(/\.0+$/, ''); // Remove .00, .0, etc.
-    formatted = formatted.replace(/(\.\d*?)0+$/, '$1'); // Remove trailing zeros in decimals (e.g., 15.50 → 15.5)
+    formatted = formatted.replace(/\.0+$/, '');
+    formatted = formatted.replace(/(\.\d*?)0+$/, '$1');
 
-    // Add currency label if requested
-    if (includeCurrency) {
-        formatted += ' ليرة سورية';
+    // Add currency label
+    if (currencyLabel) {
+        formatted += ' ' + currencyLabel;
     }
 
     return formatted;
 }
+
 
 function showError(elementId, message) {
     const element = document.getElementById(elementId);
