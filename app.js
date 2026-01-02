@@ -518,7 +518,7 @@ async function fetchExchangeRates() {
         }
 
         // Fetch from API
-        const apiUrl = `https://script.google.com/macros/s/AKfycbza6AAxzPF_BGNP9K4T1saIAfjCGKW1E5rOJEeSDFRDrd549KGVPV42m1TVmnXvI-uhuw/exec`;
+        const apiUrl = `https://script.google.com/macros/s/AKfycby-II4FRVpAmRpZv6H_bW1t6sNPd4enf6PnnraaLDcF0AJpxue0QRpcge0oEBxxRMHP0g/exec`;
 
         const response = await fetch(apiUrl);
         if (!response.ok) {
